@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom & Blink by Ramsha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f7f1eb;
+            --surface: rgba(255, 255, 255, 0.82);
+            --text: #3d2e2e;
+            --muted: #7c6c6c;
+            --green: #5f8f79;
+            --rose: #d78fb1;
+            --shadow: 0 20px 50px rgba(91, 71, 63, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            font-family: Georgia, 'Times New Roman', serif;
+            background:
+                radial-gradient(circle at top left, rgba(215, 143, 177, 0.16), transparent 28%),
+                radial-gradient(circle at top right, rgba(95, 143, 121, 0.16), transparent 24%),
+                linear-gradient(180deg, #fbf7f2 0%, #f6efe8 100%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .announcement {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: linear-gradient(90deg, #1e1e1e 0%, #3f312f 50%, #1e1e1e 100%);
+            color: #fff7ee;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+        }
+
+        .navbar {
+            width: min(1180px, calc(100% - 24px));
+            margin: 14px auto 0;
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 14px 26px;
+            position: sticky;
+            top: 56px;
+            z-index: 150;
+            gap: 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 160px;
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #eec7d5, #dfe9d7);
+            color: #52383a;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+        }
+
+        .brand-text {
+            line-height: 1.05;
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 1.08rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .brand-text span {
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.92rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(215, 143, 177, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .nav-links i {
+            color: var(--rose);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 160px;
+            justify-content: flex-end;
+        }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(61, 46, 46, 0.08);
+            background: rgba(255, 255, 255, 0.7);
+            display: grid;
+            place-items: center;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .icon-button:hover {
+            transform: translateY(-1px);
+            background: #fff;
+        }
+
+        .page-shell {
+            width: min(1180px, calc(100% - 24px));
+            margin: 22px auto 0;
+            padding-bottom: 40px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-top: 10px;
+        }
+
+        .hero-copy,
+        .hero-visual,
+        .section-card,
+        .feature-tile,
+        .collection-card,
+        .product-card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-copy {
+            border-radius: 36px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-copy::before {
+            content: '';
+            position: absolute;
+            inset: auto -80px -90px auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(215, 143, 177, 0.22), transparent 68%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: rgba(95, 143, 121, 0.1);
+            color: var(--green);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            color: var(--text);
+            margin: 18px 0 14px;
+            font-size: clamp(2.8rem, 6vw, 5.1rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 600;
+        }
+
+        .hero-copy p {
+            margin: 0;
+            color: var(--muted);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            max-width: 56ch;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 26px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 999px;
+            padding: 14px 20px;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2e2a28, #584744);
+            color: #fff7ee;
+            box-shadow: 0 12px 26px rgba(46, 42, 40, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.84);
+            color: var(--text);
+            border-color: rgba(61, 46, 46, 0.12);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .stat {
+            padding: 16px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(61, 46, 46, 0.08);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .stat span,
+        .section-head p,
+        .collection-body p,
+        .product-body p,
+        .feature-body p,
+        .band-copy p,
+        .band-points div {
+            color: var(--muted);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            line-height: 1.65;
+        }
+
+        .hero-visual {
+            border-radius: 36px;
+            padding: 22px;
+            display: grid;
+            gap: 18px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-visual::before,
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(8px);
+            pointer-events: none;
+        }
+
+        .hero-visual::before {
+            width: 210px;
+            height: 210px;
+            right: -60px;
+            top: -60px;
+            background: radial-gradient(circle, rgba(95, 143, 121, 0.18), transparent 70%);
+        }
+
+        .hero-visual::after {
+            width: 240px;
+            height: 240px;
+            left: -80px;
+            bottom: -90px;
+            background: radial-gradient(circle, rgba(215, 143, 177, 0.2), transparent 68%);
+        }
+
+        .visual-card {
+            border-radius: 28px;
+            min-height: 240px;
+            background:
+                linear-gradient(180deg, rgba(29, 25, 24, 0.1), rgba(29, 25, 24, 0.42)),
+                radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.35), transparent 24%),
+                linear-gradient(135deg, #dcc7b5 0%, #e8dcd4 32%, #cdb7aa 100%);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: #fff8f0;
+        }
+
+        .visual-card .label,
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.17);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+        }
+
+        .visual-card h2 {
+            margin: 12px 0 8px;
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .visual-card p {
+            margin: 0;
+            max-width: 28ch;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .mini-card {
+            min-height: 148px;
+            border-radius: 24px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            overflow: hidden;
+            color: #fff9f2;
+        }
+
+        .mini-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 10%, rgba(0, 0, 0, 0.34) 100%);
+        }
+
+        .mini-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .mini-card:nth-child(1) {
+            background: linear-gradient(135deg, #8b5f5b, #e0c9b8);
+        }
+
+        .mini-card:nth-child(2) {
+            background: linear-gradient(135deg, #88a38f, #dfe7d8);
+        }
+
+        .section-block {
+            margin-top: 28px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            line-height: 1;
+        }
+
+        .section-card {
+            border-radius: 30px;
+            padding: 24px;
+        }
+
+        .collection-grid,
+        .product-grid,
+        .feature-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .collection-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .feature-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .collection-card,
+        .product-card,
+        .feature-tile {
+            border-radius: 26px;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .collection-card:hover,
+        .product-card:hover,
+        .feature-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 48px rgba(91, 71, 63, 0.16);
+        }
+
+        .collection-media,
+        .product-media {
+            aspect-ratio: 1 / 1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #eaded3, #f8f3ef);
+        }
+
+        .collection-fallback,
+        .product-fallback {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(95, 143, 121, 0.18), rgba(215, 143, 177, 0.18));
+            color: rgba(61, 46, 46, 0.72);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 0.75rem;
+        }
+
+        .collection-body,
+        .product-body,
+        .feature-body {
+            padding: 18px;
+        }
+
+        .collection-body h3,
+        .product-body h3,
+        .feature-body h3 {
+            margin: 0 0 8px;
+            font-size: 1.2rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+        }
+
+        .price {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .add-btn {
+            margin-top: 14px;
+            width: 100%;
+            border: 0;
+            border-radius: 999px;
+            padding: 13px 16px;
+            background: linear-gradient(135deg, #d78fb1, #c89c6a);
+            color: #fffaf6;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.03);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(95, 143, 121, 0.12);
+            color: var(--green);
+            margin-bottom: 14px;
+            font-size: 1.1rem;
+        }
+
+        .brand-band {
+            margin-top: 28px;
+            border-radius: 30px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(61, 46, 46, 0.95), rgba(73, 53, 51, 0.92));
+            color: #fef5ec;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .band-copy h2 {
+            margin: 0 0 10px;
+            font-size: clamp(1.7rem, 3vw, 2.5rem);
+        }
+
+        .band-points {
+            display: grid;
+            gap: 10px;
+        }
+
+        .band-points div {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer {
+            margin: 28px 0 0;
+            padding: 18px 0 6px;
+            color: var(--muted);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+
+        .footer strong {
+            color: var(--text);
+        }
+
+        @media (max-width: 980px) {
+            .hero,
+            .brand-band,
+            .section-head {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: start;
+            }
+
+            .collection-grid,
+            .product-grid,
+            .feature-grid,
+            .hero-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                width: min(1180px, calc(100% - 16px));
+                padding: 14px;
+                top: 52px;
+                border-radius: 28px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .brand,
+            .nav-actions {
+                min-width: auto;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                gap: 6px;
+            }
+
+            .nav-links a {
+                padding: 9px 10px;
+                font-size: 0.85rem;
+            }
+
+            .page-shell {
+                width: min(1180px, calc(100% - 16px));
+            }
+
+            .hero-copy,
+            .hero-visual,
+            .section-card,
+            .brand-band {
+                border-radius: 24px;
+                padding: 18px;
+            }
+
+            .collection-grid,
+            .product-grid,
+            .feature-grid,
+            .hero-stats,
+            .visual-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: clamp(2.4rem, 12vw, 4rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="announcement">
+        <span>Same day delivery</span>
+        <span>Contact us: 0327 844 4468</span>
+        <span>Delivery all over Lahore</span>
+    </div>
+
+    <div class="navbar">
+        <div class="brand">
+            <div class="brand-mark"><i class="fa-solid fa-spa"></i></div>
+            <div class="brand-text">
+                <strong>Bloom & Blink</strong>
+                <span>by Ramsha</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="#home"><i class="fas fa-home"></i>Home</a>
+            <a href="#collections"><i class="fas fa-layer-group"></i>Collections</a>
+            <a href="#products"><i class="fas fa-store"></i>Shop</a>
+            <a href="#contact"><i class="fas fa-envelope"></i>Contact</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="icon-button" type="button" aria-label="Search our site"><i class="fas fa-search"></i></button>
+            <button class="icon-button" type="button" aria-label="Account"><i class="fas fa-user"></i></button>
+            <button class="icon-button" type="button" aria-label="View cart"><i class="fas fa-shopping-cart"></i></button>
+        </div>
+    </div>
+
+    <div class="page-shell" id="home">
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="eyebrow"><i class="fa-solid fa-leaf"></i> Lahore's Trusted Floral Studio</div>
+                <h1>Flowers that feel thoughtful, elegant, and unforgettable.</h1>
+                <p>
+                    Bloom & Blink creates handcrafted bouquets, gift boxes, and celebration pieces for same-day delivery.
+                    The look is refined, warm, and quietly luxurious, with every order styled to feel personal.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#products"><i class="fas fa-bag-shopping"></i>Shop the collection</a>
+                    <a class="btn btn-secondary" href="#collections"><i class="fas fa-arrow-down"></i>Explore categories</a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <strong>Same Day</strong>
+                        <span>Delivery across Lahore</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Fresh</strong>
+                        <span>Handcrafted to order</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Luxury</strong>
+                        <span>Gift-ready presentation</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="label"><i class="fa-solid fa-sparkles"></i> Featured mood</div>
+                    <h2>Soft blooms, rich tones, and premium gifting.</h2>
+                    <p>Designed to echo the calm, polished style of a modern boutique flower shop.</p>
+                </div>
+
+                <div class="visual-grid">
+                    <div class="mini-card">
+                        <span class="pill">Bouquets</span>
+                        <strong>Elegant stems for every occasion</strong>
+                    </div>
+                    <div class="mini-card">
+                        <span class="pill">Gift boxes</span>
+                        <strong>Thoughtful details, beautifully arranged</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block" id="collections">
+            <div class="section-head">
+                <div>
+                    <h2>Whimsical favourites</h2>
+                    <p>Collections inspired by the reference site structure: a polished browse experience, clear category cards, and a more premium floral feel.</p>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="collection-grid">
+                    <article class="collection-card">
+                        <div class="collection-media">
+                            <div class="collection-fallback">Flower Bouquets</div>
+                        </div>
+                        <div class="collection-body">
+                            <h3>Flower Bouquets</h3>
+                            <p>Classic hand-tied arrangements for birthdays, anniversaries, and everyday gifting.</p>
+                        </div>
+                    </article>
+
+                    <article class="collection-card">
+                        <div class="collection-media">
+                            <div class="collection-fallback">Wedding Collection</div>
+                        </div>
+                        <div class="collection-body">
+                            <h3>Wedding Collection</h3>
+                            <p>Graceful ceremony florals, stage pieces, and premium bridal arrangements.</p>
+                        </div>
+                    </article>
+
+                    <article class="collection-card">
+                        <div class="collection-media">
+                            <div class="collection-fallback">Gift Boxes</div>
+                        </div>
+                        <div class="collection-body">
+                            <h3>Gift Boxes</h3>
+                            <p>Curated floral gifts with a luxury unboxing feel and soft seasonal styling.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block" id="products">
+            <div class="section-head">
+                <div>
+                    <h2>Birthday bash picks</h2>
+                    <p>Product cards now feel closer to a real storefront: stronger spacing, clearer hierarchy, and a richer grid presentation.</p>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="product-grid">
+                    <article class="product-card">
+                        <div class="product-media">
+                            <div class="product-fallback">Birthday Bliss</div>
+                        </div>
+                        <div class="product-body">
+                            <div class="pill"><i class="fa-solid fa-cake-candles"></i> Birthday</div>
+                            <h3>Birthday Bliss</h3>
+                            <p>Bright, cheerful stems with a celebratory finish.</p>
+                            <div class="meta-row">
+                                <span class="price">Rs. 4,750.00</span>
+                                <span>Same day</span>
+                            </div>
+                            <button class="add-btn" type="button">Add to cart</button>
+                        </div>
+                    </article>
+
+                    <article class="product-card">
+                        <div class="product-media">
+                            <div class="product-fallback">Blooming Celebration</div>
+                        </div>
+                        <div class="product-body">
+                            <div class="pill"><i class="fa-solid fa-heart"></i> Bouquet</div>
+                            <h3>Blooming Celebration</h3>
+                            <p>Soft, romantic flowers designed to feel gift-ready and polished.</p>
+                            <div class="meta-row">
+                                <span class="price">Rs. 14,500.00</span>
+                                <span>Premium</span>
+                            </div>
+                            <button class="add-btn" type="button">Add to cart</button>
+                        </div>
+                    </article>
+
+                    <article class="product-card">
+                        <div class="product-media">
+                            <div class="product-fallback">Lotus Party Box</div>
+                        </div>
+                        <div class="product-body">
+                            <div class="pill"><i class="fa-solid fa-gift"></i> Gift box</div>
+                            <h3>Lotus Party Box</h3>
+                            <p>Layered blooms and treats with a luxe presentation box style.</p>
+                            <div class="meta-row">
+                                <span class="price">Rs. 18,500.00</span>
+                                <span>Best seller</span>
+                            </div>
+                            <button class="add-btn" type="button">Add to cart</button>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="brand-band">
+                <div class="band-copy">
+                    <h2>Elegant flowers, delivered with care.</h2>
+                    <p>
+                        The layout now mirrors the reference site more closely: calm editorial spacing, premium cards, and a more developed shopping experience.
+                        It keeps your branding while making the page feel less like a simple mockup.
+                    </p>
+                </div>
+                <div class="band-points">
+                    <div><strong>01.</strong> Curated gifting for birthdays, weddings, and anniversaries.</div>
+                    <div><strong>02.</strong> Soft editorial colors with a warm, upscale storefront look.</div>
+                    <div><strong>03.</strong> Responsive layout that stays clean on mobile and desktop.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="section-head">
+                <div>
+                    <h2>Why customers return</h2>
+                    <p>A few simple trust signals make the page feel closer to a live flower shop instead of a static landing page.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-tile">
+                    <div class="feature-body">
+                        <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                        <h3>Fast delivery</h3>
+                        <p>Same-day service across Lahore for the moments that need speed and care.</p>
+                    </div>
+                </article>
+
+                <article class="feature-tile">
+                    <div class="feature-body">
+                        <div class="feature-icon"><i class="fa-solid fa-seedling"></i></div>
+                        <h3>Fresh arrangements</h3>
+                        <p>Each bouquet is styled to feel fresh, natural, and thoughtfully composed.</p>
+                    </div>
+                </article>
+
+                <article class="feature-tile">
+                    <div class="feature-body">
+                        <div class="feature-icon"><i class="fa-solid fa-box-open"></i></div>
+                        <h3>Gift-ready boxes</h3>
+                        <p>Beautiful packaging gives every order a premium unboxing experience.</p>
+                    </div>
+                </article>
+
+                <article class="feature-tile" id="contact">
+                    <div class="feature-body">
+                        <div class="feature-icon"><i class="fa-solid fa-phone"></i></div>
+                        <h3>Direct contact</h3>
+                        <p>Customers can reach you quickly when they want help choosing the right piece.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <div class="footer">
+            <strong>&copy; 2026 Bloom & Blink by Ramsha.</strong> All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
