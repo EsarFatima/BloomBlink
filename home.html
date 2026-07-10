@@ -607,6 +607,19 @@
             color: var(--text);
         }
 
+        .catalog-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(95, 143, 121, 0.1);
+            color: var(--green);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.82rem;
+        }
+
         @media (max-width: 980px) {
             .hero,
             .brand-band,
@@ -762,41 +775,13 @@
             <div class="section-head">
                 <div>
                     <h2>Whimsical favourites</h2>
-                    <p>Collections inspired by the reference site structure: a polished browse experience, clear category cards, and a more premium floral feel.</p>
+                    <p>Collections are now driven by a `categories` data model so the page can grow into a MongoDB Atlas-backed catalog without changing the layout.</p>
+                    <div class="catalog-count" id="category-count"></div>
                 </div>
             </div>
 
             <div class="section-card">
-                <div class="collection-grid">
-                    <article class="collection-card">
-                        <div class="collection-media">
-                            <div class="collection-fallback">Flower Bouquets</div>
-                        </div>
-                        <div class="collection-body">
-                            <h3>Flower Bouquets</h3>
-                            <p>Classic hand-tied arrangements for birthdays, anniversaries, and everyday gifting.</p>
-                        </div>
-                    </article>
-
-                    <article class="collection-card">
-                        <div class="collection-media">
-                            <div class="collection-fallback">Wedding Collection</div>
-                        </div>
-                        <div class="collection-body">
-                            <h3>Wedding Collection</h3>
-                            <p>Graceful ceremony florals, stage pieces, and premium bridal arrangements.</p>
-                        </div>
-                    </article>
-
-                    <article class="collection-card">
-                        <div class="collection-media">
-                            <div class="collection-fallback">Gift Boxes</div>
-                        </div>
-                        <div class="collection-body">
-                            <h3>Gift Boxes</h3>
-                            <p>Curated floral gifts with a luxury unboxing feel and soft seasonal styling.</p>
-                        </div>
-                    </article>
+                <div class="collection-grid" id="collection-grid">
                 </div>
             </div>
         </section>
@@ -805,59 +790,13 @@
             <div class="section-head">
                 <div>
                     <h2>Birthday bash picks</h2>
-                    <p>Product cards now feel closer to a real storefront: stronger spacing, clearer hierarchy, and a richer grid presentation.</p>
+                    <p>Products are mapped as records in a `products` collection, which makes it straightforward to fetch them from MongoDB Atlas later.</p>
+                    <div class="catalog-count" id="product-count"></div>
                 </div>
             </div>
 
             <div class="section-card">
-                <div class="product-grid">
-                    <article class="product-card">
-                        <div class="product-media">
-                            <div class="product-fallback">Birthday Bliss</div>
-                        </div>
-                        <div class="product-body">
-                            <div class="pill"><i class="fa-solid fa-cake-candles"></i> Birthday</div>
-                            <h3>Birthday Bliss</h3>
-                            <p>Bright, cheerful stems with a celebratory finish.</p>
-                            <div class="meta-row">
-                                <span class="price">Rs. 4,750.00</span>
-                                <span>Same day</span>
-                            </div>
-                            <button class="add-btn" type="button">Add to cart</button>
-                        </div>
-                    </article>
-
-                    <article class="product-card">
-                        <div class="product-media">
-                            <div class="product-fallback">Blooming Celebration</div>
-                        </div>
-                        <div class="product-body">
-                            <div class="pill"><i class="fa-solid fa-heart"></i> Bouquet</div>
-                            <h3>Blooming Celebration</h3>
-                            <p>Soft, romantic flowers designed to feel gift-ready and polished.</p>
-                            <div class="meta-row">
-                                <span class="price">Rs. 14,500.00</span>
-                                <span>Premium</span>
-                            </div>
-                            <button class="add-btn" type="button">Add to cart</button>
-                        </div>
-                    </article>
-
-                    <article class="product-card">
-                        <div class="product-media">
-                            <div class="product-fallback">Lotus Party Box</div>
-                        </div>
-                        <div class="product-body">
-                            <div class="pill"><i class="fa-solid fa-gift"></i> Gift box</div>
-                            <h3>Lotus Party Box</h3>
-                            <p>Layered blooms and treats with a luxe presentation box style.</p>
-                            <div class="meta-row">
-                                <span class="price">Rs. 18,500.00</span>
-                                <span>Best seller</span>
-                            </div>
-                            <button class="add-btn" type="button">Add to cart</button>
-                        </div>
-                    </article>
+                <div class="product-grid" id="product-grid">
                 </div>
             </div>
         </section>
@@ -926,5 +865,112 @@
             <strong>&copy; 2026 Bloom & Blink by Ramsha.</strong> All rights reserved.
         </div>
     </div>
+
+    <script>
+        const categories = [
+            {
+                id: 'flower-bouquets',
+                name: 'Flower Bouquets',
+                description: 'Classic hand-tied arrangements for birthdays, anniversaries, and everyday gifting.',
+                label: 'Bouquets',
+            },
+            {
+                id: 'wedding-collection',
+                name: 'Wedding Collection',
+                description: 'Graceful ceremony florals, stage pieces, and premium bridal arrangements.',
+                label: 'Wedding',
+            },
+            {
+                id: 'gift-boxes',
+                name: 'Gift Boxes',
+                description: 'Curated floral gifts with a luxury unboxing feel and soft seasonal styling.',
+                label: 'Gift boxes',
+            },
+        ];
+
+        const products = [
+            {
+                id: 'birthday-bliss',
+                name: 'Birthday Bliss',
+                category: 'Birthday',
+                price: 4750,
+                badge: 'Same day',
+                description: 'Bright, cheerful stems with a celebratory finish.',
+                fallback: 'Birthday Bliss',
+                icon: 'fa-cake-candles',
+            },
+            {
+                id: 'blooming-celebration',
+                name: 'Blooming Celebration',
+                category: 'Bouquet',
+                price: 14500,
+                badge: 'Premium',
+                description: 'Soft, romantic flowers designed to feel gift-ready and polished.',
+                fallback: 'Blooming Celebration',
+                icon: 'fa-heart',
+            },
+            {
+                id: 'lotus-party-box',
+                name: 'Lotus Party Box',
+                category: 'Gift box',
+                price: 18500,
+                badge: 'Best seller',
+                description: 'Layered blooms and treats with a luxe presentation box style.',
+                fallback: 'Lotus Party Box',
+                icon: 'fa-gift',
+            },
+        ];
+
+        const currencyFormatter = new Intl.NumberFormat('en-PK', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        const collectionGrid = document.getElementById('collection-grid');
+        const productGrid = document.getElementById('product-grid');
+        const categoryCount = document.getElementById('category-count');
+        const productCount = document.getElementById('product-count');
+
+        categoryCount.textContent = `${categories.length} categories ready for Atlas`;
+        productCount.textContent = `${products.length} products ready for Atlas`;
+
+        collectionGrid.innerHTML = categories
+            .map(
+                (category) => `
+                    <article class="collection-card" data-category-id="${category.id}">
+                        <div class="collection-media">
+                            <div class="collection-fallback">${category.label}</div>
+                        </div>
+                        <div class="collection-body">
+                            <h3>${category.name}</h3>
+                            <p>${category.description}</p>
+                        </div>
+                    </article>
+                `
+            )
+            .join('');
+
+        productGrid.innerHTML = products
+            .map(
+                (product) => `
+                    <article class="product-card" data-product-id="${product.id}">
+                        <div class="product-media">
+                            <div class="product-fallback">${product.fallback}</div>
+                        </div>
+                        <div class="product-body">
+                            <div class="pill"><i class="fa-solid ${product.icon}"></i> ${product.category}</div>
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            <div class="meta-row">
+                                <span class="price">Rs. ${currencyFormatter.format(product.price)}</span>
+                                <span>${product.badge}</span>
+                            </div>
+                            <button class="add-btn" type="button">Add to cart</button>
+                        </div>
+                    </article>
+                `
+            )
+            .join('');
+    </script>
 </body>
 </html>
