@@ -178,7 +178,7 @@ router.post('/products', requireAdmin, async (req, res, next) => {
     const result = await db.collection('products').insertOne({
       name,
       description,
-      categoryId,
+      categoryId: categoryObjectId,
       imageUrl: imageUrl || '',
       featured: Boolean(featured),
       status: status || 'active',
@@ -202,13 +202,19 @@ router.put('/products/:id', requireAdmin, async (req, res, next) => {
 
     const { name, description, categoryId, imageUrl, featured, status } = req.body;
     const db = await getDb();
+    const normalizedCategoryId = categoryId !== undefined ? toObjectId(categoryId) : undefined;
+
+    if (categoryId !== undefined && !normalizedCategoryId) {
+      return res.status(400).json({ message: 'Invalid categoryId.' });
+    }
+
     const updateResult = await db.collection('products').updateOne(
       { _id: productId },
       {
         $set: {
           ...(name !== undefined ? { name } : {}),
           ...(description !== undefined ? { description } : {}),
-          ...(categoryId !== undefined ? { categoryId } : {}),
+          ...(normalizedCategoryId !== undefined ? { categoryId: normalizedCategoryId } : {}),
           ...(imageUrl !== undefined ? { imageUrl } : {}),
           ...(featured !== undefined ? { featured: Boolean(featured) } : {}),
           ...(status !== undefined ? { status } : {}),

@@ -1,4 +1,5 @@
 const express = require('express');
+const { ObjectId } = require('mongodb');
 const { getDb } = require('../db');
 
 const router = express.Router();
@@ -23,7 +24,9 @@ router.get('/products', async (req, res, next) => {
     const filter = {};
 
     if (req.query.categoryId) {
-      filter.categoryId = req.query.categoryId;
+      filter.categoryId = ObjectId.isValid(req.query.categoryId)
+        ? new ObjectId(req.query.categoryId)
+        : req.query.categoryId;
     }
 
     const products = await db.collection('products').find(filter).sort({ name: 1 }).toArray();
