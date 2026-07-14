@@ -7,6 +7,34 @@ const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
+function issueAdminToken(admin, secret) {
+  return jwt.sign(
+    {
+      sub: admin._id.toString(),
+      email: admin.email,
+      role: admin.role,
+    },
+    secret,
+    { expiresIn: '12h' }
+  );
+}
+
+function getDevelopmentAdmin() {
+  const email = (process.env.SEED_ADMIN_EMAIL || '').toLowerCase();
+  const password = process.env.SEED_ADMIN_PASSWORD || '';
+
+  if (!email || !password) {
+    return null;
+  }
+
+  return {
+    _id: new ObjectId('000000000000000000000001'),
+    email,
+    password,
+    role: 'admin',
+  };
+}
+
 function toObjectId(id) {
   return ObjectId.isValid(id) ? new ObjectId(id) : null;
 }
@@ -19,8 +47,40 @@ router.post('/login', async (req, res, next) => {
       return res.status(400).json({ message: 'Email and password are required.' });
     }
 
-    const db = await getDb();
-    const admin = await db.collection('users').findOne({ email: email.toLowerCase(), role: 'admin' });
+    const normalizedEmail = email.toLowerCase();
+    let admin = null;
+    let databaseAvailable = true;
+
+    try {
+      const db = await getDb();
+      admin = await db.collection('users').findOne({ email: normalizedEmail, role: 'admin' });
+    } catch (error) {
+      databaseAvailable = false;
+    }
+
+    if (!admin && !databaseAvailable) {
+      const developmentAdmin = getDevelopmentAdmin();
+
+      if (!developmentAdmin || developmentAdmin.email !== normalizedEmail || developmentAdmin.password !== password) {
+        return res.status(401).json({ message: 'Invalid admin credentials.' });
+      }
+
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        return res.status(500).json({ message: 'JWT_SECRET is not configured.' });
+      }
+
+      const token = issueAdminToken(developmentAdmin, secret);
+
+      return res.json({
+        token,
+        admin: {
+          id: developmentAdmin._id,
+          email: developmentAdmin.email,
+          role: developmentAdmin.role,
+        },
+      });
+    }
 
     if (!admin) {
       return res.status(401).json({ message: 'Invalid admin credentials.' });
@@ -36,15 +96,7 @@ router.post('/login', async (req, res, next) => {
       return res.status(500).json({ message: 'JWT_SECRET is not configured.' });
     }
 
-    const token = jwt.sign(
-      {
-        sub: admin._id.toString(),
-        email: admin.email,
-        role: admin.role,
-      },
-      secret,
-      { expiresIn: '12h' }
-    );
+    const token = issueAdminToken(admin, secret);
 
     res.json({
       token,
