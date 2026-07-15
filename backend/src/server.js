@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map((origin) => origin.trim()).filter(Boolean);
-
+console.log('Allowed origins:', allowedOrigins);
 app.use(cors({
   origin(origin, callback) {
     if (!origin || origin === 'null') {

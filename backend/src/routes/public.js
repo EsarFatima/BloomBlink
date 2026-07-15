@@ -46,4 +46,24 @@ router.get('/site-content', async (req, res, next) => {
   }
 });
 
+router.get('/contact', async (req, res, next) => {
+  try {
+    const db = await getDb();
+    const content = await db.collection('siteContent').findOne({ key: 'home' });
+    res.json(content?.contact || {});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/about', async (req, res, next) => {
+  try {
+    const db = await getDb();
+    const content = await db.collection('siteContent').findOne({ key: 'home' });
+    res.json({ aboutUs: content?.aboutUs || '' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

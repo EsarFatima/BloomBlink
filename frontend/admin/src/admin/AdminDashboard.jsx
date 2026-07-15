@@ -31,6 +31,12 @@ export default function AdminDashboard() {
         <button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}>
           🌸 Products
         </button>
+        <button className={tab === 'contact' ? 'active' : ''} onClick={() => navigate('/admin/contact')}>
+          📞 Contact
+        </button>
+        <button className={tab === 'about-us' ? 'active' : ''} onClick={() => navigate('/admin/about-us')}>
+          ℹ️ About Us
+        </button>
       </nav>
 
       <main>
