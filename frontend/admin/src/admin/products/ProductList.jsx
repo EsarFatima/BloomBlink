@@ -63,7 +63,7 @@ export default function ProductList() {
       <div className="header-actions">
         <h2>Products</h2>
         {!editing && products.length > 0 && categories.length > 0 && (
-          <button className="btn-primary" onClick={() => setEditing({})}>
+          <button className="btn-primary" type="button" onClick={() => setEditing({})}>
             + Add Product
           </button>
         )}
@@ -87,15 +87,15 @@ export default function ProductList() {
         <div className="loading">Loading products...</div>
       ) : products.length === 0 ? (
         <div className="empty-state">
-          <span className="empty-state-icon">🌸</span>
+          <span className="empty-state-icon" aria-hidden="true">✦</span>
           <h3>No products yet</h3>
           <p>Create your first product to showcase your beautiful flowers</p>
           {categories.length === 0 ? (
-            <p style={{ color: 'var(--warning)', fontSize: '14px', marginTop: '16px' }}>
-              ⚠️ Create a category first before adding products
+            <p className="empty-state-warning">
+              Create a category first before adding products.
             </p>
           ) : (
-            <button className="btn-primary" onClick={() => setEditing({})}>
+            <button className="btn-primary" type="button" onClick={() => setEditing({})}>
               Create Your First Product
             </button>
           )}
@@ -118,21 +118,16 @@ export default function ProductList() {
                   <td><strong>{p.name}</strong></td>
                   <td>{categoryName(p.categoryId)}</td>
                   <td>
-                    <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      background: p.status === 'active' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
-                      color: p.status === 'active' ? 'var(--success)' : 'var(--text)',
-                      fontSize: '12px',
-                      fontWeight: '500'
-                    }}>
+                    <span className={`status-badge status-${p.status}`}>
                       {p.status}
                     </span>
                   </td>
-                  <td>{p.featured ? '⭐ Yes' : 'No'}</td>
+                  <td>{p.featured ? <span className="featured-badge">Featured</span> : 'No'}</td>
                   <td>
-                    <button className="btn-secondary btn-small" onClick={() => setEditing(p)}>Edit</button>
-                    <button className="btn-danger btn-small" onClick={() => handleDelete(p._id)}>Delete</button>
+                    <div className="table-actions">
+                      <button className="btn-secondary btn-small" type="button" onClick={() => setEditing(p)}>Edit</button>
+                      <button className="btn-danger btn-small" type="button" onClick={() => handleDelete(p._id)}>Delete</button>
+                    </div>
                   </td>
                 </tr>
               ))}
