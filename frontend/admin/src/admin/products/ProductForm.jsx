@@ -30,11 +30,23 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
     <form onSubmit={handleSubmit} className="product-form">
       <label>
         Name
-        <input name="name" value={form.name} onChange={handleChange} required />
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="e.g. Blush garden bouquet"
+          required
+        />
       </label>
       <label>
         Description
-        <textarea name="description" value={form.description} onChange={handleChange} />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="Describe the flowers, finish, and ideal occasion."
+          rows="4"
+        />
       </label>
       <label>
         Category
@@ -49,7 +61,13 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
       </label>
       <label>
         Image URL
-        <input name="imageUrl" value={form.imageUrl} onChange={handleChange} />
+        <input
+          name="imageUrl"
+          value={form.imageUrl}
+          onChange={handleChange}
+          placeholder="https://example.com/product.jpg"
+          type="url"
+        />
       </label>
       <label>
         Status
@@ -63,14 +81,13 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
         Featured
       </label>
       <div className="form-actions">
-        <button type="submit">{initialData ? 'Update' : 'Create'}</button>
-        {initialData && (
-          <button type="button" onClick={onCancel}>
-            Cancel
-          </button>
-        )}
+        <button className="btn-primary" type="submit">
+          {initialData ? 'Update product' : 'Create product'}
+        </button>
+        <button className="btn-secondary" type="button" onClick={onCancel}>
+          Cancel
+        </button>
       </div>
     </form>
   );
 }
-
