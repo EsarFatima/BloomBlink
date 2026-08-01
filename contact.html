@@ -1,0 +1,511 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Bloom & Blink by Ramsha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f7f1eb;
+            --surface: rgba(255, 255, 255, 0.82);
+            --text: #3d2e2e;
+            --muted: #7c6c6c;
+            --green: #5f8f79;
+            --rose: #d78fb1;
+            --shadow: 0 20px 50px rgba(91, 71, 63, 0.14);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            font-family: Georgia, 'Times New Roman', serif;
+            background:
+                radial-gradient(circle at top left, rgba(215, 143, 177, 0.16), transparent 28%),
+                radial-gradient(circle at top right, rgba(95, 143, 121, 0.16), transparent 24%),
+                linear-gradient(180deg, #fbf7f2 0%, #f6efe8 100%);
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button, input, textarea, select { font: inherit; }
+
+        .announcement {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: linear-gradient(90deg, #1e1e1e 0%, #3f312f 50%, #1e1e1e 100%);
+            color: #fff7ee;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+        }
+
+        .navbar {
+            width: min(1180px, calc(100% - 24px));
+            margin: 14px auto 0;
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 14px 26px;
+            position: sticky;
+            top: 56px;
+            z-index: 150;
+            gap: 18px;
+        }
+
+        .brand { display: flex; align-items: center; gap: 14px; min-width: 160px; }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #eec7d5, #dfe9d7);
+            color: #52383a;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+        }
+
+        .brand-text { line-height: 1.05; }
+        .brand-text strong { display: block; font-size: 1.08rem; letter-spacing: 0.06em; text-transform: uppercase; }
+        .brand-text span { color: var(--muted); font-size: 0.84rem; }
+
+        .nav-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+        .nav-links a {
+            color: var(--text);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.92rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .nav-links a:hover { background: rgba(215, 143, 177, 0.12); transform: translateY(-1px); }
+        .nav-links a.active { background: rgba(95, 143, 121, 0.14); color: var(--green); }
+        .nav-links i { color: var(--rose); }
+
+        .nav-actions { display: flex; align-items: center; gap: 10px; min-width: 160px; justify-content: flex-end; }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(61, 46, 46, 0.08);
+            background: rgba(255, 255, 255, 0.7);
+            display: grid;
+            place-items: center;
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .icon-button:hover { transform: translateY(-1px); background: #fff; }
+
+        .page-shell { width: min(1180px, calc(100% - 24px)); margin: 22px auto 0; padding-bottom: 40px; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: rgba(95, 143, 121, 0.1);
+            color: var(--green);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            color: var(--text);
+            margin: 18px 0 14px;
+            font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+            line-height: 0.98;
+            letter-spacing: -0.04em;
+            font-weight: 600;
+        }
+
+        h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 12px; letter-spacing: -0.02em; }
+        h3 { margin: 0 0 4px; font-size: 1.05rem; }
+
+        p { color: var(--muted); font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; line-height: 1.75; }
+
+        .contact-hero {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            border-radius: 36px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            inset: -60px -60px auto auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(215, 143, 177, 0.22), transparent 68%);
+            pointer-events: none;
+        }
+
+        .contact-hero .eyebrow { margin: 0 auto; }
+        .contact-hero p { max-width: 60ch; margin: 0 auto; font-size: 1.05rem; }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 24px;
+            margin-top: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            border-radius: 30px;
+            padding: 30px;
+        }
+
+        .info-list { display: grid; gap: 14px; margin-top: 20px; }
+
+        .info-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(61, 46, 46, 0.08);
+        }
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(95, 143, 121, 0.12);
+            color: var(--green);
+            flex-shrink: 0;
+        }
+
+        .info-item h3 { color: var(--text); }
+        .info-item p { margin: 0; }
+
+        .socials { display: flex; gap: 10px; margin-top: 22px; }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(61, 46, 46, 0.08);
+            color: var(--text);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .social-btn:hover { transform: translateY(-1px); background: #fff; color: var(--rose); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+
+        .field { display: grid; gap: 8px; }
+        .field.full { grid-column: 1 / -1; }
+
+        .field label {
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(61, 46, 46, 0.14);
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--text);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .field textarea { min-height: 130px; resize: vertical; }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: rgba(95, 143, 121, 0.45);
+            box-shadow: 0 0 0 4px rgba(95, 143, 121, 0.12);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 999px;
+            padding: 15px 24px;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { color: #fff7ee; background: linear-gradient(135deg, #5f8f79, #4f7a66); box-shadow: 0 12px 24px rgba(79, 122, 102, 0.22); width: 100%; }
+
+        .form-note {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(95, 143, 121, 0.12);
+            border: 1px solid rgba(95, 143, 121, 0.2);
+            color: #3f7a63;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+        }
+
+        .form-note.visible { display: block; }
+
+        .map-band {
+            margin-top: 24px;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+        }
+
+        .map-band iframe { width: 100%; height: 320px; border: 0; display: block; }
+
+        .footer {
+            margin: 28px 0 0;
+            padding: 18px 0 6px;
+            color: var(--muted);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+
+        .footer strong { color: var(--text); }
+
+        @media (max-width: 980px) {
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                width: min(1180px, calc(100% - 16px));
+                padding: 14px;
+                top: 52px;
+                border-radius: 28px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .brand, .nav-actions { min-width: auto; width: 100%; justify-content: center; }
+            .nav-links { width: 100%; gap: 6px; }
+            .nav-links a { padding: 9px 10px; font-size: 0.85rem; }
+            .page-shell { width: min(1180px, calc(100% - 16px)); }
+            .contact-hero, .card { border-radius: 24px; padding: 22px; }
+            .form-grid { grid-template-columns: 1fr; }
+            h1 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
+        }
+    </style>
+</head>
+<body>
+    <div class="announcement">
+        <span>Same day delivery</span>
+        <span>Contact us: 0327 844 4468</span>
+        <span>Delivery all over Lahore</span>
+    </div>
+
+    <div class="navbar">
+        <div class="brand">
+            <div class="brand-mark"><i class="fa-solid fa-spa"></i></div>
+            <div class="brand-text">
+                <strong>Bloom & Blink</strong>
+                <span>by Ramsha</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="home.html"><i class="fas fa-home"></i>Home</a>
+            <a href="home.html#collections"><i class="fas fa-layer-group"></i>Collections</a>
+            <a href="home.html#products"><i class="fas fa-store"></i>Shop</a>
+            <a href="about.html"><i class="fas fa-seedling"></i>About</a>
+            <a class="active" href="contact.html"><i class="fas fa-envelope"></i>Contact</a>
+            <a href="admin.html"><i class="fas fa-user-shield"></i>Admin</a>
+        </div>
+
+        <div class="nav-actions">
+            <a class="icon-button" href="about.html" aria-label="About us"><i class="fas fa-seedling"></i></a>
+            <a class="icon-button" href="admin.html" aria-label="Admin sign in"><i class="fas fa-user-shield"></i></a>
+        </div>
+    </div>
+
+    <div class="page-shell">
+        <section class="contact-hero">
+            <div class="eyebrow"><i class="fa-solid fa-envelope"></i> Get in touch</div>
+            <h1>We would love to hear from you.</h1>
+            <p>
+                Questions about an order, a custom arrangement, or a special event? Reach out and the Bloom & Blink
+                team will get back to you with warm, thoughtful help.
+            </p>
+        </section>
+
+        <div class="contact-grid">
+            <aside class="card">
+                <div class="eyebrow"><i class="fa-solid fa-location-dot"></i> Reach us</div>
+                <h2>Contact details</h2>
+                <p>We are here to help every day for same-day floral gifting across Lahore.</p>
+
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                        <div>
+                            <h3>Phone &amp; WhatsApp</h3>
+                            <p><a href="tel:+923278444468">0327 844 4468</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div>
+                            <h3>Email</h3>
+                            <p><a href="mailto:hello@bloomblink.com">hello@bloomblink.com</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <div>
+                            <h3>Delivery area</h3>
+                            <p>All over Lahore, Pakistan</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div>
+                            <h3>Hours</h3>
+                            <p>Every day, 9:00 AM &ndash; 9:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="socials">
+                    <a class="social-btn" href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a class="social-btn" href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a class="social-btn" href="https://wa.me/923278444468" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a class="social-btn" href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </aside>
+
+            <section class="card">
+                <div class="eyebrow"><i class="fa-solid fa-paper-plane"></i> Send a message</div>
+                <h2>Tell us what you need</h2>
+                <p>Share a few details and we will help you pick or customise the perfect arrangement.</p>
+
+                <form id="contact-form" novalidate>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="name">Full name</label>
+                            <input id="name" name="name" type="text" placeholder="Your name" required>
+                        </div>
+                        <div class="field">
+                            <label for="email">Email address</label>
+                            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+                        </div>
+                        <div class="field">
+                            <label for="phone">Phone number</label>
+                            <input id="phone" name="phone" type="tel" placeholder="03xx xxxxxxx">
+                        </div>
+                        <div class="field">
+                            <label for="topic">I am interested in</label>
+                            <select id="topic" name="topic">
+                                <option value="bouquet">A bouquet</option>
+                                <option value="gift-box">A gift box</option>
+                                <option value="wedding">Wedding flowers</option>
+                                <option value="event">An event</option>
+                                <option value="other">Something else</option>
+                            </select>
+                        </div>
+                        <div class="field full">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell us about the occasion, date, and any preferences." required></textarea>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:18px;">
+                        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i>Send message</button>
+                    </div>
+
+                    <p class="form-note" id="form-note">
+                        <i class="fa-solid fa-check"></i> Thank you! Your message has been noted. We will reach out shortly.
+                    </p>
+                </form>
+            </section>
+        </div>
+
+        <div class="map-band">
+            <iframe
+                title="Bloom & Blink delivery area in Lahore"
+                src="https://www.google.com/maps?q=Lahore,Pakistan&output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+
+        <div class="footer">
+            <strong>&copy; 2026 Bloom & Blink by Ramsha.</strong> All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('contact-form');
+        const note = document.getElementById('form-note');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            note.classList.add('visible');
+            form.reset();
+            note.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    </script>
+</body>
+</html>

@@ -65,7 +65,7 @@ export default function CategoryList() {
       <div className="header-actions">
         <h2>Categories</h2>
         {!editing && categories.length > 0 && (
-          <button className="btn-primary" onClick={() => setEditing({})}>
+          <button className="btn-primary" type="button" onClick={() => setEditing({})}>
             + Add Category
           </button>
         )}
@@ -88,10 +88,10 @@ export default function CategoryList() {
         <div className="loading">Loading categories...</div>
       ) : categories.length === 0 ? (
         <div className="empty-state">
-          <span className="empty-state-icon">📁</span>
+          <span className="empty-state-icon" aria-hidden="true">⊞</span>
           <h3>No categories yet</h3>
           <p>Create your first category to get started organizing your products</p>
-          <button className="btn-primary" onClick={() => setEditing({})}>
+          <button className="btn-primary" type="button" onClick={() => setEditing({})}>
             Create Your First Category
           </button>
         </div>
@@ -113,8 +113,10 @@ export default function CategoryList() {
                   <td><code>{c.slug}</code></td>
                   <td>{c.description || '—'}</td>
                   <td>
-                    <button className="btn-secondary btn-small" onClick={() => setEditing(c)}>Edit</button>
-                    <button className="btn-danger btn-small" onClick={() => handleDelete(c._id)}>Delete</button>
+                    <div className="table-actions">
+                      <button className="btn-secondary btn-small" type="button" onClick={() => setEditing(c)}>Edit</button>
+                      <button className="btn-danger btn-small" type="button" onClick={() => handleDelete(c._id)}>Delete</button>
+                    </div>
                   </td>
                 </tr>
               ))}

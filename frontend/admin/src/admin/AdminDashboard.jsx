@@ -14,22 +14,41 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <header>
-        <div>
-          <h1>🌸 Bloom & Blink Admin</h1>
+      <header className="dashboard-header">
+        <a className="admin-brand" href="/admin/dashboard" aria-label="Bloom and Blink dashboard">
+          <span className="admin-brand-mark" aria-hidden="true">B</span>
+          <span>
+            <strong>Bloom & Blink</strong>
+            <small>Store manager</small>
+          </span>
+        </a>
+
+        <div className="dashboard-heading">
+          <span className="eyebrow">Admin workspace</span>
+          <h1>Storefront dashboard</h1>
         </div>
-        <button onClick={handleLogout}>Logout</button>
+
+        <button className="logout-button" type="button" onClick={handleLogout}>
+          Sign out
+        </button>
       </header>
 
-      <nav className="admin-tabs">
+      <nav className="admin-tabs" aria-label="Store management">
         <button
+          type="button"
           className={tab === 'categories' ? 'active' : ''}
           onClick={() => setTab('categories')}
         >
-          📁 Categories
+          <span aria-hidden="true">⊞</span>
+          Categories
         </button>
-        <button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}>
-          🌸 Products
+        <button
+          type="button"
+          className={tab === 'products' ? 'active' : ''}
+          onClick={() => setTab('products')}
+        >
+          <span aria-hidden="true">✦</span>
+          Products
         </button>
         <button className={tab === 'contact' ? 'active' : ''} onClick={() => navigate('/admin/contact')}>
           📞 Contact
@@ -40,8 +59,24 @@ export default function AdminDashboard() {
       </nav>
 
       <main>
-        {tab === 'categories' && <CategoryList />}
-        {tab === 'products' && <ProductList />}
+        <div className="dashboard-intro">
+          <div>
+            <span className="panel-kicker">
+              {tab === 'categories' ? 'Collection structure' : 'Product catalogue'}
+            </span>
+            <h2>{tab === 'categories' ? 'Manage categories' : 'Manage products'}</h2>
+          </div>
+          <p>
+            {tab === 'categories'
+              ? 'Create clear groups that help customers discover the right flowers and gifts.'
+              : 'Keep every arrangement, status, and featured selection accurate.'}
+          </p>
+        </div>
+
+        <section className="management-panel">
+          {tab === 'categories' && <CategoryList />}
+          {tab === 'products' && <ProductList />}
+        </section>
       </main>
     </div>
   );

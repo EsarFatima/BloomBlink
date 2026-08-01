@@ -41,11 +41,23 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
     <form onSubmit={handleSubmit} className="product-form">
       <label>
         Name
-        <input name="name" value={form.name} onChange={handleChange} required />
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="e.g. Blush garden bouquet"
+          required
+        />
       </label>
       <label>
         Description
-        <textarea name="description" value={form.description} onChange={handleChange} />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="Describe the flowers, finish, and ideal occasion."
+          rows="4"
+        />
       </label>
       <label>
         Category
@@ -60,7 +72,13 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
       </label>
       <label>
         Image URL
-        <input name="imageUrl" value={form.imageUrl} onChange={handleChange} />
+        <input
+          name="imageUrl"
+          value={form.imageUrl}
+          onChange={handleChange}
+          placeholder="https://example.com/product.jpg"
+          type="url"
+        />
       </label>
       <label>
         Upload Image
@@ -78,14 +96,22 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
         Featured
       </label>
       <div className="form-actions">
+<<<<<<< HEAD
         <button type="submit" disabled={uploading}>{uploading ? 'Uploading...' : initialData ? 'Update' : 'Create'}</button>
         {initialData && (
           <button type="button" onClick={onCancel}>
             Cancel
           </button>
         )}
+=======
+        <button className="btn-primary" type="submit">
+          {initialData ? 'Update product' : 'Create product'}
+        </button>
+        <button className="btn-secondary" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+>>>>>>> 7022a0b86d72da4d59160aa61e29909197778de2
       </div>
     </form>
   );
 }
-

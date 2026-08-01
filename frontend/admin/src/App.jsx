@@ -1,3 +1,4 @@
-export { default } from './AppRouter.jsx';
+import './App.css';
 
+export { default } from './AppRouter.jsx';
 
