@@ -1,5 +1,5 @@
 const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
-const BASE = `${API_ORIGIN}/api`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 async function get(path) {
   const res = await fetch(`${BASE}${path}`);

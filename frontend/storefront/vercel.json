@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://bloomblink-backend.vercel.app/api/$1"
+      "destination": "https://bloomblink.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",
