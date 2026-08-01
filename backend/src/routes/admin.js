@@ -12,7 +12,14 @@ const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 const uploadDir = path.join(__dirname, '../../public/uploads');
-fs.mkdirSync(uploadDir, { recursive: true });
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (err) {
+  // In serverless/read-only environments creating local upload directories may fail.
+  // It's safe to ignore — uploads are stored in the database for production.
+  // eslint-disable-next-line no-console
+  console.warn('Could not create upload directory, continuing without local uploads:', err && err.message);
+}
 
 // Configure Cloudinary from env (CLOUDINARY_URL or individual vars)
 cloudinary.config(process.env.CLOUDINARY_URL ? undefined : {

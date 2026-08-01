@@ -102,3 +102,49 @@ Open `frontend/home.html` in the browser or use Live Server.
 ## Next Step
 
 Build the admin dashboard and connect the frontend to the backend API.
+
+## Deployment (Vercel)
+
+The project is easiest to deploy as two Vercel projects:
+
+1. Backend project from `backend/`
+2. Frontend project from repo root (uses `frontend/storefront` build)
+
+### 1) Deploy Backend
+
+- In Vercel, create a new project and set Root Directory to `backend`
+- Framework preset: `Other`
+- Build/Output can stay default because `backend/vercel.json` maps `api/index.js`
+- Add environment variables:
+	- `MONGODB_URI`
+	- `MONGODB_DB`
+	- `JWT_SECRET`
+	- `CORS_ORIGIN` (comma-separated list of allowed origins)
+
+Example `CORS_ORIGIN`:
+
+`https://your-storefront.vercel.app,https://your-admin.vercel.app,http://localhost:5173,http://localhost:5189`
+
+### 2) Deploy Storefront
+
+- Create another Vercel project from repo root
+- The root `vercel.json` now builds `frontend/storefront` and serves it as a SPA
+- API calls under `/api/*` are rewritten to `https://bloomblink-backend.vercel.app/api/*`
+
+If your backend URL is different, update:
+
+- `vercel.json` at repo root
+- `frontend/storefront/vercel.json`
+- `frontend/admin/vercel.json` (if deploying admin separately)
+
+### 3) Optional: Deploy Admin Separately
+
+- Create a Vercel project with Root Directory `frontend/admin`
+- `frontend/admin/vercel.json` rewrites `/api/*` to backend and enables SPA fallback
+
+### 4) Verify After Deploy
+
+- `GET /api/health` returns `{ ok: true, ... }`
+- Storefront loads products/categories
+- Admin login works
+- Create/update/delete operations do not show CORS errors

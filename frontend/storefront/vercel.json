@@ -1,7 +1,4 @@
 {
-  "version": 2,
-  "buildCommand": "cd frontend/storefront && npm ci && npm run build",
-  "outputDirectory": "frontend/storefront/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
