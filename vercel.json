@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/storefront/package.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "frontend/admin/package.json",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "https://bloomblink-backend.loca.lt/$1" },
+    { "src": "/(.*)", "dest": "/frontend/storefront/dist/$1" }
+  ]
+}

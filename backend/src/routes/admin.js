@@ -1,11 +1,36 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 const { ObjectId } = require('mongodb');
 const { getDb } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+const uploadDir = path.join(__dirname, '../../public/uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
+
+// Configure Cloudinary from env (CLOUDINARY_URL or individual vars)
+cloudinary.config(process.env.CLOUDINARY_URL ? undefined : {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Use memory storage and stream uploads to Cloudinary so hosted deployments work
+const memoryStorage = multer.memoryStorage();
+const upload = multer({
+  storage: memoryStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    cb(null, allowed.includes(file.mimetype));
+  },
+});
 
 function issueAdminToken(admin, secret) {
   return jwt.sign(
@@ -64,6 +89,32 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/me', requireAdmin, (req, res) => res.json({ admin: req.admin }));
+
+router.post('/upload-image', requireAdmin, upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No image file provided.' });
+  }
+
+  // Store the image in MongoDB `images` collection and return a stable URL
+  try {
+    const db = await getDb();
+    const ext = path.extname(req.file.originalname || '.png');
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    const doc = {
+      filename,
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+      createdAt: new Date(),
+    };
+    const result = await db.collection('images').insertOne(doc);
+    const id = result.insertedId.toString();
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const url = `${baseUrl}/api/uploads/${id}`;
+    return res.json({ url, id });
+  } catch (err) {
+    return res.status(500).json({ message: 'Saving upload to database failed.', detail: err.message });
+  }
+});
 
 // ── Categories ───────────────────────────────────────────────────────────────
 
@@ -128,7 +179,7 @@ router.get('/products', requireAdmin, async (req, res, next) => {
 
 router.post('/products', requireAdmin, async (req, res, next) => {
   try {
-    const { name, description, categoryId, imageUrl, featured, status, price } = req.body;
+    const { name, description, categoryId, imageUrl, featured, status, price, subCategory } = req.body;
     if (!name || !description || !categoryId)
       return res.status(400).json({ message: 'Name, description, and categoryId are required.' });
     const categoryObjectId = toObjectId(categoryId);
@@ -136,6 +187,7 @@ router.post('/products', requireAdmin, async (req, res, next) => {
     const db = await getDb();
     const result = await db.collection('products').insertOne({
       name, description, categoryId: categoryObjectId,
+      subCategory: subCategory || '',
       imageUrl: imageUrl || '',
       price: price != null && price !== '' ? Number(price) : null,
       featured: Boolean(featured),
@@ -150,7 +202,7 @@ router.put('/products/:id', requireAdmin, async (req, res, next) => {
   try {
     const productId = toObjectId(req.params.id);
     if (!productId) return res.status(400).json({ message: 'Invalid product id.' });
-    const { name, description, categoryId, imageUrl, featured, status, price } = req.body;
+    const { name, description, categoryId, imageUrl, featured, status, price, subCategory } = req.body;
     const db = await getDb();
     const normalizedCategoryId = categoryId !== undefined ? toObjectId(categoryId) : undefined;
     if (categoryId !== undefined && !normalizedCategoryId)
@@ -161,6 +213,7 @@ router.put('/products/:id', requireAdmin, async (req, res, next) => {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
         ...(normalizedCategoryId !== undefined && { categoryId: normalizedCategoryId }),
+        ...(subCategory !== undefined && { subCategory }),
         ...(imageUrl !== undefined && { imageUrl }),
         ...(featured !== undefined && { featured: Boolean(featured) }),
         ...(status !== undefined && { status }),
@@ -180,6 +233,87 @@ router.delete('/products/:id', requireAdmin, async (req, res, next) => {
     const db = await getDb();
     const result = await db.collection('products').deleteOne({ _id: productId });
     if (result.deletedCount === 0) return res.status(404).json({ message: 'Product not found.' });
+    res.status(204).send();
+  } catch (error) { next(error); }
+});
+
+// ── SubCategories ─────────────────────────────────────────────────────────────
+
+router.get('/subcategories', requireAdmin, async (req, res, next) => {
+  try {
+    const db = await getDb();
+    const filter = req.query.categoryId ? { categoryId: req.query.categoryId } : {};
+    const subs = await db.collection('subCategories').find(filter).sort({ name: 1 }).toArray();
+    // Attach product count to each subcategory
+    const subsWithCount = await Promise.all(subs.map(async (s) => {
+      const count = await db.collection('products').countDocuments({
+        subCategory: s.name,
+        ...(s.categoryId ? { categoryId: toObjectId(s.categoryId) || s.categoryId } : {}),
+      });
+      return { ...s, productCount: count };
+    }));
+    res.json(subsWithCount);
+  } catch (error) { next(error); }
+});
+
+router.post('/subcategories', requireAdmin, async (req, res, next) => {
+  try {
+    const { categoryId, name } = req.body;
+    if (!categoryId || !name) return res.status(400).json({ message: 'categoryId and name are required.' });
+    const db = await getDb();
+    // Prevent duplicates
+    const existing = await db.collection('subCategories').findOne({ categoryId, name });
+    if (existing) return res.status(409).json({ message: 'Subcategory already exists for this category.' });
+    const result = await db.collection('subCategories').insertOne({ categoryId, name, createdAt: new Date() });
+    res.status(201).json(await db.collection('subCategories').findOne({ _id: result.insertedId }));
+  } catch (error) { next(error); }
+});
+
+router.put('/subcategories/:id', requireAdmin, async (req, res, next) => {
+  try {
+    const id = toObjectId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Invalid id.' });
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ message: 'name is required.' });
+    const db = await getDb();
+    const result = await db.collection('subCategories').updateOne(
+      { _id: id },
+      { $set: { name, updatedAt: new Date() } }
+    );
+    if (result.matchedCount === 0) return res.status(404).json({ message: 'Subcategory not found.' });
+    res.json(await db.collection('subCategories').findOne({ _id: id }));
+  } catch (error) { next(error); }
+});
+
+router.delete('/subcategories/:id', requireAdmin, async (req, res, next) => {
+  try {
+    const id = toObjectId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Invalid id.' });
+    const db = await getDb();
+    // Find the subcategory to get its name
+    const sub = await db.collection('subCategories').findOne({ _id: id });
+    if (!sub) return res.status(404).json({ message: 'Subcategory not found.' });
+    // Find affected products
+    const affectedProducts = await db.collection('products')
+      .find({ categoryId: toObjectId(sub.categoryId) || sub.categoryId, subCategory: sub.name })
+      .project({ name: 1 })
+      .toArray();
+    if (affectedProducts.length > 0 && req.query.reassignTo === undefined) {
+      // Return 409 with affected product names so frontend can show reassign UI
+      return res.status(409).json({
+        message: `${affectedProducts.length} product(s) use this subcategory.`,
+        affectedProducts,
+      });
+    }
+    // If reassignTo provided, update affected products first
+    if (affectedProducts.length > 0) {
+      const reassignTo = req.query.reassignTo || '';
+      await db.collection('products').updateMany(
+        { categoryId: toObjectId(sub.categoryId) || sub.categoryId, subCategory: sub.name },
+        { $set: { subCategory: reassignTo, updatedAt: new Date() } }
+      );
+    }
+    await db.collection('subCategories').deleteOne({ _id: id });
     res.status(204).send();
   } catch (error) { next(error); }
 });

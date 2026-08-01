@@ -1,30 +1,45 @@
 import { useState, useEffect } from 'react';
-import { getProducts, getCategories } from '../services/api';
+import { getProducts, getCategories, getSubCategories } from '../services/api';
 import ProductCard from '../components/ProductCard';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getCategories()
-      .then(setCategories)
-      .catch(() => {});
+    getCategories().then(setCategories).catch(() => {});
   }, []);
 
+  // When category changes, load its subcategories and reset subcategory filter
+  useEffect(() => {
+    setSelectedSubCategory('');
+    if (selectedCategory) {
+      getSubCategories(selectedCategory).then(setSubCategories).catch(() => setSubCategories([]));
+    } else {
+      setSubCategories([]);
+    }
+  }, [selectedCategory]);
+
+  // Reload products when category or subcategory filter changes
   useEffect(() => {
     setLoading(true);
     setError('');
-    getProducts(selectedCategory)
+    getProducts(selectedCategory, selectedSubCategory)
       .then(setProducts)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedSubCategory]);
 
   const categoryMap = Object.fromEntries(categories.map((c) => [c._id, c.name]));
+
+  const handleCategorySelect = (id) => {
+    setSelectedCategory(id);
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -38,9 +53,9 @@ export default function HomePage() {
 
       {/* Category filter */}
       {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 justify-center mb-8">
+        <div className="flex flex-wrap gap-2 justify-center mb-4">
           <button
-            onClick={() => setSelectedCategory('')}
+            onClick={() => handleCategorySelect('')}
             className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
               selectedCategory === ''
                 ? 'bg-rose-500 text-white border-rose-500'
@@ -52,7 +67,7 @@ export default function HomePage() {
           {categories.map((c) => (
             <button
               key={c._id}
-              onClick={() => setSelectedCategory(c._id)}
+              onClick={() => handleCategorySelect(c._id)}
               className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
                 selectedCategory === c._id
                   ? 'bg-rose-500 text-white border-rose-500'
@@ -62,6 +77,38 @@ export default function HomePage() {
               {c.name}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Subcategory filter — only shown when a category is selected and has subcategories */}
+      {selectedCategory && subCategories.length > 0 && (
+        <div className="mb-8 text-center">
+          <p className="text-xs uppercase tracking-[0.25em] text-rose-400 font-semibold mb-3">Refine by subcategory</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            <button
+              onClick={() => setSelectedSubCategory('')}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                selectedSubCategory === ''
+                  ? 'bg-pink-400 text-white border-pink-400'
+                  : 'bg-white text-pink-500 border-pink-200 hover:border-pink-400'
+              }`}
+            >
+              All {categoryMap[selectedCategory]}
+            </button>
+            {subCategories.map((s) => (
+              <button
+                key={s._id}
+                onClick={() => setSelectedSubCategory(s.name)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                  selectedSubCategory === s.name
+                    ? 'bg-pink-400 text-white border-pink-400'
+                    : 'bg-white text-pink-500 border-pink-200 hover:border-pink-400'
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

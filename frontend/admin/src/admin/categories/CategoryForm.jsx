@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import { uploadImage } from '../api';
 
 const emptyForm = { name: '', description: '', imageUrl: '', slug: '' };
 
 export default function CategoryForm({ initialData, onSubmit, onCancel }) {
   const [form, setForm] = useState(emptyForm);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     setForm(initialData || emptyForm);
@@ -13,9 +16,17 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(form);
+    let imageUrl = form.imageUrl;
+
+    if (selectedFile) {
+      setUploading(true);
+      imageUrl = await uploadImage(selectedFile);
+      setUploading(false);
+    }
+
+    onSubmit({ ...form, imageUrl });
   };
 
   return (
@@ -36,8 +47,12 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }) {
         Image URL
         <input name="imageUrl" value={form.imageUrl} onChange={handleChange} />
       </label>
+      <label>
+        Upload Image
+        <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+      </label>
       <div className="form-actions">
-        <button type="submit">{initialData ? 'Update' : 'Create'}</button>
+        <button type="submit" disabled={uploading}>{uploading ? 'Uploading...' : initialData ? 'Update' : 'Create'}</button>
         {initialData && (
           <button type="button" onClick={onCancel}>
             Cancel

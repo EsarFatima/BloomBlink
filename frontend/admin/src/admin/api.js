@@ -1,4 +1,5 @@
-const BASE_URL = '/api/admin';
+const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
+const BASE_URL = `${API_ORIGIN}/api/admin`;
 
 export class AuthError extends Error {}
 
@@ -45,5 +46,26 @@ export const deleteProduct = (id) => apiFetch(`/products/${id}`, { method: 'DELE
 
 export const getContactInfo = () => apiFetch("/contact");
 export const updateContactInfo = (data) => apiFetch("/contact", { method: "PUT", body: JSON.stringify(data) });
+
+export async function uploadImage(file) {
+  const token = localStorage.getItem('bloomBlinkAdminToken');
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const res = await fetch(`${BASE_URL}/upload-image`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem('bloomBlinkAdminToken');
+    throw new Error('Session expired');
+  }
+
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || 'Image upload failed');
+  return body.url;
+}
 
 

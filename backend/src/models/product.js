@@ -2,7 +2,9 @@ function createProductDocument({
   name,
   description,
   categoryId,
+  subCategory = '',
   imageUrl = '',
+  price = null,
   featured = false,
   status = 'active',
 }) {
@@ -10,7 +12,9 @@ function createProductDocument({
     name,
     description,
     categoryId,
+    subCategory,
     imageUrl,
+    price,
     featured,
     status,
     createdAt: new Date(),
@@ -18,6 +22,4 @@ function createProductDocument({
   };
 }
 
-module.exports = {
-  createProductDocument,
-};
+module.exports = { createProductDocument };
