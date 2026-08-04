@@ -1,8 +1,8 @@
-const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
+const BASE_URL = API_BASE ? `${API_BASE}/api` : '/api';
 
 async function get(path) {
-  const res = await fetch(`${BASE}${path}`);
+  const res = await fetch(`${BASE_URL}${path}`);
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
 }

@@ -1,5 +1,5 @@
-const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api/admin`;
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
+const BASE_URL = API_BASE ? `${API_BASE}/api/admin` : '/api/admin';
 
 export class AuthError extends Error {}
 

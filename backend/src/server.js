@@ -40,10 +40,25 @@ app.use((error, req, res, next) => {
   });
 });
 
-const port = process.env.PORT || 3001;
-app.listen(port, () => {
-  console.log(`Backend listening on port ${port}`);
-});
+const port = Number(process.env.PORT || 3001);
+
+function startServer(portToUse) {
+  const server = app.listen(portToUse, () => {
+    console.log(`Backend listening on port ${portToUse}`);
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && portToUse < 3010) {
+      console.warn(`Port ${portToUse} is already in use. Trying ${portToUse + 1}...`);
+      server.close(() => startServer(portToUse + 1));
+    } else {
+      console.error('Server startup error:', error);
+      process.exit(1);
+    }
+  });
+}
+
+startServer(port);
 
 process.on('SIGINT', async () => {
   await closeDb();
